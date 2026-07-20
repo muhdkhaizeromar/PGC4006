@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ms" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGC4006 - Modul Interaktif BESA (MQA Level 7)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js for robust state management -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 
+                            300: '#86efac', 400: '#4ade80', 500: '#10b981', 
+                            600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b',
+                            950: '#022c22'
+                        },
+                        dark: {
+                            50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0',
+                            300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b',
+                            600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a',
+                            950: '#090d16'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d16;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Premium custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #047857;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        .reader-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.8;
+        }
+        .reader-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="text-dark-100 flex flex-col min-h-screen" x-data="{ 
+    currentTab: 'dashboard', 
+    sidebarOpen: true, 
+    selectedLesson: 1,
+    completedLessons: [1],
+    scores: { c1: 4, c2: 3, c3: 4, c4: 5, c5: 3 },
+    diagnosticDone: true,
+    selectedCapstoneSection: 'c1',
+    activeQuizQuestion: 0,
+    searchQuery: '',
+    
+    // Unit 1 Activities State
+    auditOrgName: '',
+    auditChallenges: '',
+    auditTraditionalScore: 3,
+    auditBesaReadiness: 3,
+    
+    // Unit 2 Activities State
+    behaviorTarget: 'Memimpin Perubahan Digital',
+    behaviorSteps: ['Kesedaran Awal', 'Pembinaan Kemahiran', 'Aplikasi Krisis', 'Pengekalan Amalan'],
+    unit2ScaleAnswers: { speed: '', salary: '', race: '', marital: '', iq: '' },
+    unit2ScaleChecked: false,
+    
+    // Unit 3 Activities State
+    swotMatrix: { s: 'Komitmen Lembaga Pengarah Tinggi', w: 'Sistem pengkodan manual lambat', o: 'Integrasi AI Generatif', t: 'Rintangan pentadbir laggards' },
+    swotAnalysisResult: '',
+    
+    // Unit 8 Contingency Table (Chi-Square)
+    contingencyTable: {
+        r1c1: 15, r1c2: 25,
+        r2c1: 30, r2c2: 10
+    },
+    chiSquareResult: null,
+
+    // Capstone State
+    capstoneDrafts: {
+        c1: 'Program Profile: Program Transformasi Pemimpin Digital Universiti 2026. Sasaran: 40 Dekan dan Timbalan Dekan.',
+        c2: 'Behavioural Event Framework: Menggunakan model STAR bagi saringan kompetensi kepemimpinan perubahan.',
+        c3: 'Theory-Based Change Model: Mengintegrasikan Stages of Change dengan Theory of Planned Behaviour.',
+        c4: 'Innovation Adoption Analysis: Menangani golongan Laggards melalui intervensi peer-mentoring.',
+        c5: 'Kirkpatrick Evaluation Plan: Tahap 1 (Kepuasan), Tahap 2 (Sijil Kecekapan), Tahap 3 (BEI), Tahap 4 (KPI Jabatan).',
+        c6: 'CIPP Evaluation Plan: Melakukan audit menyeluruh terhadap konteks institusi awam, input fasilitator, proses real-time, dan produk akhir.',
+        c7: 'Balanced Scorecard: Menyelaraskan L&D dengan Visi Kelestarian Universiti.',
+        c8: 'BESA Instrument Set: Soalan saringan berasaskan kritikal insiden.',
+        c9: 'AI-Assisted Data Analysis: Menggunakan algoritma LLM bagi saringan tema transkrip.',
+        c10: 'Executive Evaluation Report: Ringkasan eksekutif untuk Naib Canselor.',
+        c11: 'Strategic Recommendations: Pelan induk integrasi BESA dalam dasar kenaikan pangkat.'
+    }
+}">
+
+    <!-- Top premium dashboard Header -->
+    <header class="bg-gradient-to-r from-dark-900 via-dark-950 to-slate-950 text-white shadow-2xl sticky top-0 z-50 border-b border-brand-800/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="bg-brand-600 p-2.5 rounded-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-gem text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold tracking-wider uppercase flex items-center gap-2">
+                        PGC4006 <span class="bg-brand-500/20 text-brand-300 text-[10px] px-2 py-0.5 rounded-full border border-brand-500/30 font-bold">SAMC Level 7</span>
+                    </h1>
+                    <p class="text-xs text-dark-300 font-bold">Modul Pengukuran & Penilaian Program Kendiri BESA</p>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="hidden lg:flex space-x-2">
+                <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-700 text-white shadow-md' : 'text-dark-200 hover:bg-dark-800 hover:text-white'" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-gauge mr-1.5"></i> Dashboard
+                </button>
+                <button @click="currentTab = 'modules'" :class="currentTab === 'modules' ? 'bg-brand-700 text-white shadow-md' : 'text-dark-200 hover:bg-dark-800 hover:text-white'" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-book-open mr-1.5"></i> 10 Unit SIM
+                </button>
+                <button @click="currentTab = 'toolkit'" :class="currentTab === 'toolkit' ? 'bg-brand-700 text-white shadow-md' : 'text-dark-200 hover:bg-dark-800 hover:text-white'" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-sliders mr-1.5"></i> Diagnostik Radar
+                </button>
+                <button @click="currentTab = 'sandbox'" :class="currentTab === 'sandbox' ? 'bg-brand-700 text-white shadow-md' : 'text-dark-200 hover:bg-dark-800 hover:text-white'" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-flask mr-1.5"></i> Sandbox BEI & Stat
+                </button>
+                <button @click="currentTab = 'capstone'" :class="currentTab === 'capstone' ? 'bg-brand-700 text-white shadow-md' : 'text-dark-200 hover:bg-dark-800 hover:text-white'" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-cubes mr-1.5"></i> Capstone Hub
+                </button>
+            </nav>
+
+            <!-- Learning progress panel -->
+            <div class="flex items-center space-x-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[9px] text-dark-400 font-bold uppercase tracking-wider">Progress Pembelajaran</p>
+                    <p class="text-xs font-extrabold text-brand-400" x-text="Math.round((completedLessons.length / 10) * 100) + '%'"></p>
+                </div>
+                <div class="w-16 h-1.5 bg-dark-800 rounded-full overflow-hidden hidden sm:block">
+                    <div class="h-full bg-brand-500 transition-all duration-500" :style="'width: ' + ((completedLessons.length / 10) * 100) + '%'"></div>
+                </div>
+                <button class="lg:hidden p-2.5 rounded-xl bg-dark-800 hover:bg-dark-700 text-white" @click="sidebarOpen = !sidebarOpen">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div x-show="!sidebarOpen" class="fixed inset-0 bg-black/60 z-40 lg:hidden" @click="sidebarOpen = true" x-transition></div>
+    <div x-show="!sidebarOpen" class="fixed top-0 left-0 bottom-0 w-64 bg-dark-900 text-white z-50 p-6 lg:hidden flex flex-col justify-between border-r border-dark-800" x-transition>
+        <div>
+            <div class="flex items-center space-x-3 mb-8">
+                <i class="fa-solid fa-gem text-3xl text-brand-500"></i>
+                <span class="text-sm font-bold uppercase tracking-widest text-brand-400">Main Menu</span>
+            </div>
+            <div class="space-y-3">
+                <button @click="currentTab = 'dashboard'; sidebarOpen = true" class="w-full text-left px-4 py-3 rounded-xl flex items-center text-xs font-bold" :class="currentTab === 'dashboard' ? 'bg-brand-700 text-white' : 'text-dark-300 hover:bg-dark-800'">
+                    <i class="fa-solid fa-gauge w-6 text-sm"></i> Dashboard Utama
+                </button>
+                <button @click="currentTab = 'modules'; sidebarOpen = true" class="w-full text-left px-4 py-3 rounded-xl flex items-center text-xs font-bold" :class="currentTab === 'modules' ? 'bg-brand-700 text-white' : 'text-dark-300 hover:bg-dark-800'">
+                    <i class="fa-solid fa-book-open w-6 text-sm"></i> 10 Unit SIM
+                </button>
+                <button @click="currentTab = 'toolkit'; sidebarOpen = true" class="w-full text-left px-4 py-3 rounded-xl flex items-center text-xs font-bold" :class="currentTab === 'toolkit' ? 'bg-brand-700 text-white' : 'text-dark-300 hover:bg-dark-800'">
+                    <i class="fa-solid fa-sliders w-6 text-sm"></i> Diagnostik Radar
+                </button>
+                <button @click="currentTab = 'sandbox'; sidebarOpen = true" class="w-full text-left px-4 py-3 rounded-xl flex items-center text-xs font-bold" :class="currentTab === 'sandbox' ? 'bg-brand-700 text-white' : 'text-dark-300 hover:bg-dark-800'">
+                    <i class="fa-solid fa-flask w-6 text-sm"></i> Sandbox BEI & Stat
+                </button>
+                <button @click="currentTab = 'capstone'; sidebarOpen = true" class="w-full text-left px-4 py-3 rounded-xl flex items-center text-xs font-bold" :class="currentTab === 'capstone' ? 'bg-brand-700 text-white' : 'text-dark-300 hover:bg-dark-800'">
+                    <i class="fa-solid fa-cubes w-6 text-sm"></i> Capstone Hub
+                </button>
+            </div>
+        </div>
+        <div class="pt-6 border-t border-dark-800">
+            <p class="text-[9px] text-dark-500 font-bold uppercase tracking-widest">© UPM Press & AKEPT 2026</p>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- TAB 1: COURSE DASHBOARD -->
+        <div x-show="currentTab === 'dashboard'" x-cloak class="space-y-8" x-transition>
+            
+            <!-- Hero Header Banner -->
+            <div class="bg-gradient-to-br from-brand-950 via-brand-900 to-dark-950 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl border border-brand-800/40">
+                <div class="absolute -right-16 -top-16 w-64 h-64 bg-brand-600/10 rounded-full blur-3xl"></div>
+                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10 max-w-4xl space-y-6">
+                    <span class="bg-brand-500/20 text-brand-300 border border-brand-500/30 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase">Postgraduate Stand-Alone Micro-Credential</span>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight serif-title leading-tight">
+                        Pengukuran & Penilaian Program Kendiri Peristiwa Tingkah Laku (BESA)
+                    </h2>
+                    <p class="text-sm sm:text-base text-dark-300 font-light leading-relaxed">
+                        Membincangkan isu dan cabaran dalam proses pengukuran serta penilaian keberkesanan program pembangunan bakat institusi secara kritikal, beretika, dan lestari berlandaskan tadbir urus mampan untuk menyokong pertumbuhan bakat yang dinamik.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button @click="currentTab = 'modules'" class="bg-brand-600 hover:bg-brand-500 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-brand-600/30 transition-all transform hover:-translate-y-0.5">
+                            Mula Belajar SIM (10 Unit) <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                        <button @click="currentTab = 'toolkit'" class="bg-dark-800 hover:bg-dark-700 text-white border border-dark-700 px-6 py-3 rounded-2xl font-bold transition-all transform hover:-translate-y-0.5">
+                            Diagnostik Kompetensi AKEPT <i class="fa-solid fa-sliders ml-2 text-brand-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Meta Information Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-dark-900 p-6 rounded-2xl shadow-xl border border-dark-800 flex items-center space-x-4">
+                    <div class="bg-brand-950 text-brand-400 p-4 rounded-2xl border border-brand-800/40">
+                        <i class="fa-solid fa-hourglass-half text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-dark-400 font-bold uppercase tracking-wider">Jumlah SLT</p>
+                        <p class="text-lg font-extrabold text-white">120 Jam</p>
+                    </div>
+                </div>
+                <div class="bg-dark-900 p-6 rounded-2xl shadow-xl border border-dark-800 flex items-center space-x-4">
+                    <div class="bg-emerald-950 text-emerald-400 p-4 rounded-2xl border border-emerald-800/40">
+                        <i class="fa-solid fa-laptop-code text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-dark-400 font-bold uppercase tracking-wider">Mod Penyampaian</p>
+                        <p class="text-lg font-extrabold text-white">Online Self-Paced (SIM)</p>
+                    </div>
+                </div>
+                <div class="bg-dark-900 p-6 rounded-2xl shadow-xl border border-dark-800 flex items-center space-x-4">
+                    <div class="bg-indigo-950 text-indigo-400 p-4 rounded-2xl border border-indigo-800/40">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-dark-400 font-bold uppercase tracking-wider">Tahap MQF</p>
+                        <p class="text-lg font-extrabold text-white">Tahap 7 (Pascasiswazah)</p>
+                    </div>
+                </div>
+                <div class="bg-dark-900 p-6 rounded-2xl shadow-xl border border-dark-800 flex items-center space-x-4">
+                    <div class="bg-purple-950 text-purple-400 p-4 rounded-2xl border border-purple-800/40">
+                        <i class="fa-solid fa-award text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-dark-400 font-bold uppercase tracking-wider">Bukti Kelulusan</p>
+                        <p class="text-lg font-extrabold text-white">BESA Digital Framework</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Layout: CLO and SLT Distribution -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left: CLO & SDG Alignment Matrix -->
+                <div class="lg:col-span-7 bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 space-y-6">
+                    <h3 class="text-lg font-extrabold tracking-tight serif-title text-brand-400 border-b border-dark-800 pb-4">
+                        Hasil Pembelajaran Kursus (CLO) & Jaringan SDG
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4 p-4 bg-dark-950 rounded-2xl border border-dark-800 hover:border-brand-500/20 transition">
+                            <span class="bg-brand-950 text-brand-300 font-bold px-3 py-1.5 rounded-xl text-xs border border-brand-800/30">CLO 1</span>
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold text-white">Menilai isu dan cabaran dalam proses pengukuran dan penilaian keberkesanan program pembangunan bakat institusi.</p>
+                                <div class="flex flex-wrap gap-2 pt-1">
+                                    <span class="bg-dark-800 text-dark-300 text-[10px] font-bold px-2 py-0.5 rounded">C5 (Evaluate) / CTPS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 p-4 bg-dark-950 rounded-2xl border border-dark-800 hover:border-brand-500/20 transition">
+                            <span class="bg-emerald-950 text-emerald-300 font-bold px-3 py-1.5 rounded-xl text-xs border border-emerald-800/30">CLO 2</span>
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold text-white">Merangka kaedah pengukuran dan penilaian prestasi bakat dengan mengambil kira prinsip tadbir urus lestari dalam institusi.</p>
+                                <div class="flex flex-wrap gap-2 pt-1">
+                                    <span class="bg-dark-800 text-brand-300 text-[10px] font-bold px-2 py-0.5 rounded">SDG 16.6 - Institusi Telus & Berkesan</span>
+                                    <span class="bg-emerald-900/30 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded">C6 (Create) / LS & SC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 p-4 bg-dark-950 rounded-2xl border border-dark-800 hover:border-brand-500/20 transition">
+                            <span class="bg-indigo-950 text-indigo-300 font-bold px-3 py-1.5 rounded-xl text-xs border border-indigo-800/30">CLO 3</span>
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold text-white">Mempamer tingkah laku profesional dan kompetensi kepimpinan yang diperlukan oleh pentadbir institusi dalam pembangunan bakat berdasarkan etika tadbir urus.</p>
+                                <div class="flex flex-wrap gap-2 pt-1">
+                                    <span class="bg-dark-800 text-brand-300 text-[10px] font-bold px-2 py-0.5 rounded">SDG 16.7 - Pembuatan Keputusan Inklusif</span>
+                                    <span class="bg-indigo-900/30 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded">A5 / NC</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: SLT Verification (MQA/SAMC-Compliant) -->
+                <div class="lg:col-span-5 bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-extrabold tracking-tight serif-title text-brand-400 border-b border-dark-800 pb-4 mb-6">
+                            Verifikasi Jam Belajar (120 Jam SLT)
+                        </h3>
+                        
+                        <div class="space-y-4 max-h-[280px] overflow-y-auto pr-2">
+                            <div class="p-2.5 bg-dark-950 rounded-xl border border-dark-800">
+                                <div class="flex justify-between text-xs font-semibold mb-1 text-dark-300">
+                                    <span>Bahan Pembelajaran Interaktif (SIM)</span>
+                                    <span class="text-brand-400">30 Jam</span>
+                                </div>
+                                <div class="w-full bg-dark-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full rounded-full" style="width: 25%"></div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 bg-dark-950 rounded-xl border border-dark-800">
+                                <div class="flex justify-between text-xs font-semibold mb-1 text-dark-300">
+                                    <span>Ulasan Kajian & Sumber Bacaan</span>
+                                    <span class="text-brand-400">20 Jam</span>
+                                </div>
+                                <div class="w-full bg-dark-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full rounded-full" style="width: 17%"></div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 bg-dark-950 rounded-xl border border-dark-800">
+                                <div class="flex justify-between text-xs font-semibold mb-1 text-dark-300">
+                                    <span>Kuliah Video & Multimedia</span>
+                                    <span class="text-brand-400">15 Jam</span>
+                                </div>
+                                <div class="w-full bg-dark-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full rounded-full" style="width: 12.5%"></div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 bg-dark-950 rounded-xl border border-dark-800">
+                                <div class="flex justify-between text-xs font-semibold mb-1 text-dark-300">
+                                    <span>Kajian Kes dan Analisis BEI</span>
+                                    <span class="text-brand-400">15 Jam</span>
+                                </div>
+                                <div class="w-full bg-dark-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full rounded-full" style="width: 12.5%"></div>
+                                </div>
+                            </div>
+                            <div class="p-2.5 bg-dark-950 rounded-xl border border-dark-800">
+                                <div class="flex justify-between text-xs font-semibold mb-1 text-dark-300">
+                                    <span>Aktiviti Formatif & Amali</span>
+                                    <span class="text-brand-400">15 Jam</span>
+                                </div>
+                                <div class="w-full bg-dark-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full rounded-full" style="width: 12.5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-950 p-4 rounded-2xl border border-brand-900 text-center mt-6">
+                        <p class="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Hasil Verifikasi QVC</p>
+                        <p class="text-3xl font-extrabold text-brand-500 mt-1">120 Jam SLT</p>
+                        <p class="text-[9px] text-dark-400 mt-1">Stand-Alone Micro-Credential MQA Compliant</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: INTERACTIVE SIM TEXTBOOK -->
+        <div x-show="currentTab === 'modules'" x-cloak class="grid grid-cols-1 lg:grid-cols-12 gap-8" x-transition>
+            
+            <!-- Left Side Panel: 10 Unit Navigation -->
+            <div class="lg:col-span-4 bg-dark-900 p-6 rounded-3xl shadow-xl border border-dark-800 h-fit space-y-4">
+                <div class="space-y-1">
+                    <h3 class="text-sm font-bold text-brand-400 uppercase tracking-wider">10 Unit Pembelajaran SIM</h3>
+                    <p class="text-xs text-dark-400">Silabus Lengkap BESA (PGC4006 / Modul 6)</p>
+                </div>
+
+                <div class="space-y-2 overflow-y-auto max-h-[550px] pr-2">
+                    <template x-for="(unit, idx) in [
+                        { id: 1, no: 'U1', title: 'Konsep & Ciri Utama BESA', slt: '15 Jam' },
+                        { id: 2, no: 'U2', title: 'Kritikal Teori & Model', slt: '20 Jam' },
+                        { id: 3, no: 'U3', title: 'Pelan & Perancangan Bakat', slt: '20 Jam' },
+                        { id: 4, no: 'U4', title: 'Maklumbalas & Penambahbaikan', slt: '15 Jam' },
+                        { id: 5, no: 'U5', title: 'Pembangunan Instrumentasi', slt: '15 Jam' },
+                        { id: 6, no: 'U6', title: 'Metodologi & Kaedah', slt: '10 Jam' },
+                        { id: 7, no: 'U7', title: 'Kebolehpercayaan & Inklusiviti', slt: '10 Jam' },
+                        { id: 8, no: 'U8', title: 'Pengumpulan & Organisasi Data', slt: '5 Jam' },
+                        { id: 9, no: 'U9', title: 'Pemantauan Hasil Penilaian', slt: '5 Jam' },
+                        { id: 10, no: 'U10', title: 'Isu, Cabaran & Etika', slt: '5 Jam' }
+                    ]">
+                        <button @click="selectedLesson = unit.id" :class="selectedLesson === unit.id ? 'bg-brand-950 text-brand-300 border-brand-500/40' : 'bg-dark-950 hover:bg-dark-800 text-dark-300'" class="w-full text-left p-3.5 rounded-2xl border border-transparent flex justify-between items-center transition duration-200">
+                            <div class="flex items-center space-x-3">
+                                <span class="bg-dark-900 text-brand-400 text-[10px] font-bold px-2 py-1 rounded border border-dark-800" x-text="unit.no"></span>
+                                <span class="text-xs font-semibold block max-w-[180px] truncate" x-text="unit.title"></span>
+                            </div>
+                            <span class="text-[9px] text-dark-400 font-mono" x-text="unit.slt"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Right Panel: Massive Textbook Reader Area -->
+            <div class="lg:col-span-8 bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 space-y-8 min-h-[600px] text-sm text-dark-200 reader-content leading-relaxed">
+                
+                <!-- UNIT 1 -->
+                <div x-show="selectedLesson === 1" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 1 - Rangka Kerja</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Pengukuran dan Penilaian BESA (Behavioural Event Self-Assessment)</h2>
+                    
+                    <div class="p-5 bg-dark-950 rounded-2xl border-l-4 border-brand-500 italic text-xs text-dark-300">
+                        "Melalui BESA, pegawai yang dinilai diberikan peluang untuk penilaian kendiri berdasarkan peristiwa atau situasi yang telah dialami, dengan tujuan mengenal pasti kekuatan dan kelemahan dalam kemahiran dan kompetensi sedia ada."
+                    </div>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">1.1 Konsep dan Ciri Utama BESA</h4>
+                    <p>BESA adalah satu pendekatan penilaian yang berfokus pada analisis tingkah laku individu dalam situasi tertentu. Ciri utamanya meliputi:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Penilaian Berasaskan Peristiwa:</strong> Memfokuskan kepada peristiwa spesifik (critical incidents) untuk mengenal pasti pola tingkah laku dalam membuat keputusan atau tindakan.</li>
+                        <li><strong>Refleksi Kendiri:</strong> Menggalakkan muhasabah dan penilaian kembali tindakan diri bagi meningkatkan kesedaran kendiri.</li>
+                        <li><strong>Pembangunan Kompetensi:</strong> Menyediakan panduan konkrit langkah-langkah peningkatan berdasarkan domain-domain yang ditetapkan.</li>
+                        <li><strong>Pendekatan Berstruktur:</strong> Menjamin penilaian yang objektif menerusi pematuhan kriteria yang ketat.</li>
+                    </ul>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">1.2 Keperluan dan Pematuhan BESA</h4>
+                    <p>Pematuhan etika memerlukan perlindungan kerahsiaan maklumat peribadi tanpa sebarang prejudis. Penilaian kendiri wajib berlandaskan fakta dan bukti nyata, bukan unjuran emosi semata-mata.</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">1.3 Evolusi dan Transformasi Pengukuran Bakat</h4>
+                    <p>Sebelum ini, pengukuran bersifat kuantitatif ringkas (bilangan jam latihan, kelulusan ujian). Kini, ia bertransformasi kepada data kualitatif longitudinal, analitik data besar, dan pemprofilan kompetensi jangka panjang.</p>
+
+                    <!-- Interactive Activity 1 -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4 mt-6">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-question"></i> Aktiviti 1: Audit Amalan Penilaian Organisasi Anda
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] text-dark-400 uppercase font-bold mb-1">Nama Organisasi:</label>
+                                <input type="text" x-model="auditOrgName" placeholder="Cth: Jabatan Sumber Manusia UPM" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-dark-400 uppercase font-bold mb-1">Cabaran Utama Pembangunan Bakat Semasa:</label>
+                                <textarea x-model="auditChallenges" placeholder="Nyatakan bias atau unjuran hipotetikal..." class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white" rows="2"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-dark-400 uppercase font-bold mb-1">Kebergantungan Cara Tradisional (1-5):</label>
+                                    <input type="range" min="1" max="5" x-model="auditTraditionalScore" class="w-full accent-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-dark-400 uppercase font-bold mb-1">Ketersediaan Penggunaan BESA (1-5):</label>
+                                    <input type="range" min="1" max="5" x-model="auditBesaReadiness" class="w-full accent-brand-500">
+                                </div>
+                            </div>
+                        </div>
+                        <button @click="if(!completedLessons.includes(1)) completedLessons.push(1); selectedLesson = 2" class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">
+                            Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- UNIT 2 -->
+                <div x-show="selectedLesson === 2" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 2 - Teori & Model</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Analisis Kritikal Teori Perubahan Tingkah Laku & Model Penilaian</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">2.1 Teori Perubahan Tingkah Laku Utama</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="p-3.5 bg-dark-950 rounded-xl border border-dark-800">
+                            <h5 class="font-bold text-brand-400">Transtheoretical Model</h5>
+                            <p class="text-dark-400 mt-1">Menggambarkan perubahan melalui 6 peringkat: pra-refleksi, refleksi, persediaan, tindakan, penyelenggaraan, dan penamatan.</p>
+                        </div>
+                        <div class="p-3.5 bg-dark-950 rounded-xl border border-dark-800">
+                            <h5 class="font-bold text-brand-400">Theory of Planned Behaviour (TPB)</h5>
+                            <p class="text-dark-400 mt-1">Mengandaikan tingkah laku dipengaruhi secara kolektif oleh sikap, norma subjektif, dan kawalan tingkah laku (perceived control).</p>
+                        </div>
+                    </div>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">2.2 Teori Penerapan Inovasi Everett Rogers</h4>
+                    <p>Mengklasifikasikan kebolehterimaan inovasi organisasi kepada 5 kategori:</p>
+                    <div class="grid grid-cols-5 gap-2 text-center text-[10px] font-bold">
+                        <div class="p-2 bg-brand-950 rounded-xl border border-brand-800 text-brand-300">Inovator (2.5%)</div>
+                        <div class="p-2 bg-brand-950 rounded-xl border border-brand-800 text-brand-300">Penerap Awal (13.5%)</div>
+                        <div class="p-2 bg-brand-950 rounded-xl border border-brand-800 text-brand-300">Majoriti Awal (34%)</div>
+                        <div class="p-2 bg-brand-950 rounded-xl border border-brand-800 text-brand-300">Majoriti Lewat (34%)</div>
+                        <div class="p-2 bg-dark-950 rounded-xl border border-dark-800 text-dark-400">Laggards (16%)</div>
+                    </div>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">2.3 Penjajaran Model Penilaian</h4>
+                    <p>Sistem ini mengkaji tiga model penilaian secara kritikal:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Kirkpatrick Model:</strong> Reaction, Learning, Behaviour, Results.</li>
+                        <li><strong>CIPP Model:</strong> Context, Input, Process, Product.</li>
+                        <li><strong>Balanced Scorecard (Skor Keseimbangan):</strong> Kewangan, Pelanggan, Proses Dalaman, Pembelajaran & Pertumbuhan.</li>
+                    </ul>
+
+                    <!-- Interactive Activity 2 -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-code-compare"></i> Latihan 2: Pemadanan Skala Pengukuran Pembolehubah
+                        </h4>
+                        <p class="text-xs text-dark-400">Padankan variabel di bawah dengan jenis skala pengukuran yang tepat (Nominal, Ordinal, Interval, Ratio):</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="flex justify-between items-center p-2 bg-dark-900 rounded-lg border border-dark-800">
+                                <span>Kelajuan (Speed):</span>
+                                <select x-model="unit2ScaleAnswers.speed" class="bg-dark-950 border border-dark-800 rounded p-1 text-[11px] text-white">
+                                    <option value="">Pilih</option><option value="ratio">Ratio</option><option value="nominal">Nominal</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-dark-900 rounded-lg border border-dark-800">
+                                <span>Kategori Gaji:</span>
+                                <select x-model="unit2ScaleAnswers.salary" class="bg-dark-950 border border-dark-800 rounded p-1 text-[11px] text-white">
+                                    <option value="">Pilih</option><option value="ordinal">Ordinal</option><option value="ratio">Ratio</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-dark-900 rounded-lg border border-dark-800">
+                                <span>Bangsa/Kaum:</span>
+                                <select x-model="unit2ScaleAnswers.race" class="bg-dark-950 border border-dark-800 rounded p-1 text-[11px] text-white">
+                                    <option value="">Pilih</option><option value="nominal">Nominal</option><option value="interval">Interval</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-dark-900 rounded-lg border border-dark-800">
+                                <span>Skor IQ:</span>
+                                <select x-model="unit2ScaleAnswers.iq" class="bg-dark-950 border border-dark-800 rounded p-1 text-[11px] text-white">
+                                    <option value="">Pilih</option><option value="interval">Interval</option><option value="nominal">Nominal</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button @click="unit2ScaleChecked = true" class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Semak Jawapan</button>
+                        
+                        <div x-show="unit2ScaleChecked" class="p-3 bg-brand-950/40 text-brand-300 text-xs rounded-xl border border-brand-900/50">
+                            <p x-show="unit2ScaleAnswers.speed === 'ratio' && unit2ScaleAnswers.salary === 'ordinal' && unit2ScaleAnswers.race === 'nominal' && unit2ScaleAnswers.iq === 'interval'">
+                                <i class="fa-solid fa-circle-check"></i> <strong>Sempurna!</strong> Padanan anda 100% tepat mengikut prinsip pengukuran statistik kuantitatif.
+                            </p>
+                            <p x-show="!(unit2ScaleAnswers.speed === 'ratio' && unit2ScaleAnswers.salary === 'ordinal' && unit2ScaleAnswers.race === 'nominal' && unit2ScaleAnswers.iq === 'interval')">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Ada padanan yang kurang tepat. Sila semak semula perbezaan mutlak (Ratio) dan pemeringkatan (Ordinal).
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(2)) completedLessons.push(2); selectedLesson = 3" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 3 -->
+                <div x-show="selectedLesson === 3" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 3 - Strategi</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Pelan & Perancangan Program BESA</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">3.1 Analisis Keperluan & Matrik SWOT</h4>
+                    <p>Sebelum melancarkan modul BESA, audit diagnostik SWOT diperlukan bagi memetakan dinamika ekosistem dalaman dan luaran:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Strengths (Kekuatan):</strong> Reputasi, pangkalan data, bajet, dan kepakaran sedia ada.</li>
+                        <li><strong>Weaknesses (Kelemahan):</strong> Rintangan perubahan, sistem legasi digital yang lemah.</li>
+                        <li><strong>Opportunities (Peluang):</strong> Integrasi AI Generatif, pembiayaan SAMC.</li>
+                        <li><strong>Threats (Ancaman):</strong> Perubahan dasar pengurusan, ketidaktentuan pasaran.</li>
+                    </ul>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">3.2 Kerangka Kepemimpinan AKEPT & UPM</h4>
+                    <p>Sistem ini menyokong 5 Kluster Kompetensi Kepemimpinan Pentadbir Universiti Awam (AKEPT 2021):</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center text-[10px] font-bold">
+                        <div class="p-2 bg-emerald-950 text-emerald-300 rounded-xl border border-emerald-900">K1: Keberkesanan Peribadi</div>
+                        <div class="p-2 bg-indigo-950 text-indigo-300 rounded-xl border border-indigo-900">K2: Kognitif & Strategik</div>
+                        <div class="p-2 bg-purple-950 text-purple-300 rounded-xl border border-purple-900">K3: Memimpin Yang Lain</div>
+                        <div class="p-2 bg-rose-950 text-rose-300 rounded-xl border border-rose-900">K4: Impak & Pengaruh</div>
+                        <div class="p-2 bg-amber-950 text-amber-300 rounded-xl border border-amber-900">K5: Pencapaian & Tindakan</div>
+                    </div>
+
+                    <!-- Interactive SWOT Builder -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 3: Pembina Matrik SWOT Interaktif</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[9px] text-brand-400 font-bold uppercase mb-1">Strengths (S):</label>
+                                <input type="text" x-model="swotMatrix.s" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] text-brand-400 font-bold uppercase mb-1">Weaknesses (W):</label>
+                                <input type="text" x-model="swotMatrix.w" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] text-indigo-400 font-bold uppercase mb-1">Opportunities (O):</label>
+                                <input type="text" x-model="swotMatrix.o" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] text-rose-400 font-bold uppercase mb-1">Threats (T):</label>
+                                <input type="text" x-model="swotMatrix.t" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-xs text-white">
+                            </div>
+                        </div>
+                        <button @click="swotAnalysisResult = 'Strategi SO: Memanfaatkan ' + swotMatrix.s + ' untuk merebut peluang ' + swotMatrix.o + '.' " class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Jana Pelan Strategik</button>
+                        
+                        <div x-show="swotAnalysisResult" class="p-3 bg-dark-900 border border-brand-500/30 text-xs rounded-xl text-dark-300">
+                            <p class="font-bold text-white mb-1"><i class="fa-solid fa-chart-line text-brand-400"></i> Hasil Penjanaan Strategi BESA:</p>
+                            <span x-text="swotAnalysisResult"></span>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(3)) completedLessons.push(3); selectedLesson = 4" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 4 -->
+                <div x-show="selectedLesson === 4" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 4 - Kelestarian</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Maklumbalas & Penambahbaikan Berterusan</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">4.1 Konsep dan Halatuju Maklum Balas BESA</h4>
+                    <p>Proses maklum balas dalam BESA dipandu oleh model refleksi mampan (MQA Tahap 7). Ia memerlukan tiga tonggak utama:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Refleksi & Muhasabah:</strong> Pegawai sedar jurang kompetensi secara nyata.</li>
+                        <li><strong>Maklum Balas Konstruktif:</strong> Penilai memberikan arahan pembetulan berasaskan data kualitatif tanpa sebias.</li>
+                        <li><strong>Pemantauan Kitaran PDCA (Plan-Do-Check-Act):</strong> Integrasi teknologi digital bagi pengesanan prestasi masa nyata.</li>
+                    </ul>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">4.2 Keselarasan SDG 16 dan Kesejagatan</h4>
+                    <p>Reka bentuk maklum balas mengutamakan sasaran <strong>SDG 16.6</strong> (Membina institusi yang telus dan berakauntabiliti) serta <strong>SDG 16.7</strong> (Pembuatan keputusan yang inklusif dan representatif).</p>
+
+                    <!-- Interactive Reflection Exercise -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 4: Draf Komitmen SDG 16 Organisasi</h4>
+                        <p class="text-xs text-dark-300">Bagaimanakah organisasi anda dapat membuktikan bahawa amalan penilaian prestasinya telus dan bebas bias unjuran?</p>
+                        <textarea placeholder="Tuliskan komitmen tindakan anda di sini..." class="w-full p-3 bg-dark-900 border border-dark-800 rounded-xl text-xs text-white" rows="3"></textarea>
+                        
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(4)) completedLessons.push(4); selectedLesson = 5" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 5 -->
+                <div x-show="selectedLesson === 5" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 5 - Instrumen</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Pembangunan Instrumentasi & Teknik BEI</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">5.1 Analisis Keperluan Latihan (TNA)</h4>
+                    <p>Sebelum membangunkan instrumen, penilaian jurang kompetensi (TNA) dilakukan melalui saringan soalan Likert, ujian psikometrik (personaliti, EQ, kognitif), dan pemetaan bukti tingkah laku (Competency Evidence Mapping).</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">5.2 Teknik Behavioural Event Interview (BEI)</h4>
+                    <p>Wawancara BEI berpandukan model STAR (Situation, Task, Action, Result) bagi mengelak maklum balas hipotetikal:</p>
+                    <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
+                        <div class="bg-dark-950 p-2 rounded-xl border border-dark-800">
+                            <div class="text-brand-400 text-xs">S</div>
+                            <span>Situation</span>
+                        </div>
+                        <div class="bg-dark-950 p-2 rounded-xl border border-dark-800">
+                            <div class="text-brand-400 text-xs">T</div>
+                            <span>Task</span>
+                        </div>
+                        <div class="bg-dark-950 p-2 rounded-xl border border-dark-800">
+                            <div class="text-brand-400 text-xs">A</div>
+                            <span>Action</span>
+                        </div>
+                        <div class="bg-dark-950 p-2 rounded-xl border border-dark-800">
+                            <div class="text-brand-400 text-xs">R</div>
+                            <span>Result</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Psychometric Simulator -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 5: Simulator Penilaian Profil Psikometrik</h4>
+                        <p class="text-xs text-dark-300">Uji keupayaan kognitif dan emosi anda dalam menyelesaikan krisis organisasi berikut:</p>
+                        
+                        <div class="p-3 bg-dark-900 rounded-xl border border-dark-800 text-xs space-y-2">
+                            <p class="font-bold text-white">Senario:</p>
+                            <p class="text-dark-300">Pangkalan data pendaftaran dekan universiti tergendala pada minit akhir saringan. Apakah tindakan pertama anda?</p>
+                            <div class="space-y-2 pt-2">
+                                <button class="w-full text-left p-2.5 bg-dark-950 hover:bg-dark-800 border border-dark-800 rounded-lg text-xs transition">
+                                    A. Mengisytiharkan krisis, menubuhkan kaunter manual, serta memindahkan sebahagian pelayan ke cloud sementara.
+                                </button>
+                                <button class="w-full text-left p-2.5 bg-dark-950 hover:bg-dark-800 border border-dark-800 rounded-lg text-xs transition">
+                                    B. Menunggu arahan bertulis rasmi daripada Ketua Pegawai Maklumat (CIO).
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(5)) completedLessons.push(5); selectedLesson = 6" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 6 -->
+                <div x-show="selectedLesson === 6" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 6 - Metodologi</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Metodologi Kajian Kes, Kajian Tindakan & Rakan Kritikal</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">6.1 Metodologi Kajian Tindakan & Rakan Kritikal (Critical Friend)</h4>
+                    <p>BESA mengintegrasikan konsep <strong>Rakan Kritikal (Critical Friend)</strong> bagi mengekang bias saringan kendiri. Rakan kritikal bertindak sebagai cermin objektif, menilai ketulenan data peristiwa tingkah laku berdasarkan triangulasi kualitatif.</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">6.2 Analisis Perbandingan Statistik (t-test)</h4>
+                    <p>Sebelum menggunakan statistik inferensi parametric seperti t-test, beberapa andaian (assumptions) wajib dipatuhi:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Normality:</strong> Taburan data pembolehubah bersandar mestilah normal.</li>
+                        <li><strong>Homogeneity of Variances:</strong> Varians populasi bagi dua kumpulan mestilah sama (diuji melalui Levene's Test).</li>
+                        <li><strong>Independence of Observations:</strong> Data dikumpul daripada sampel rawak yang bebas.</li>
+                    </ul>
+
+                    <!-- Interactive t-test assumption check -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 6: Semakan Andaian Statistik t-test</h4>
+                        <div class="p-3 bg-dark-900 rounded-xl border border-dark-800 text-xs space-y-2">
+                            <p class="font-bold text-white">Adakah anda bersedia melakukan Paired-Samples t-test?</p>
+                            <label class="flex items-center space-x-2 text-dark-300">
+                                <input type="checkbox" class="accent-brand-500">
+                                <span>Sampel sebelum dan selepas latihan berasal dari subjek yang sama (Paired).</span>
+                            </label>
+                            <label class="flex items-center space-x-2 text-dark-300">
+                                <input type="checkbox" class="accent-brand-500">
+                                <span>Nilai p-value Levene's Test lebih besar daripada 0.05.</span>
+                            </label>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(6)) completedLessons.push(6); selectedLesson = 7" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 7 -->
+                <div x-show="selectedLesson === 7" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 7 - Kebolehpercayaan</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Kebolehpercayaan, Kesahan & Inklusiviti Saringan</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">7.1 Kesahan (Validity) dan Kebolehpercayaan (Reliability)</h4>
+                    <p>Instrumen penilaian BESA wajib mengekalkan tahap konsistensi saringan (Alpha Cronbach &gt; 0.70) serta kesahan kandungan (Content Validity) yang disahkan oleh pakar psikometrik.</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">7.2 Kolaborasi Pemegang Taruh & Inklusiviti</h4>
+                    <p>Mengelakkan bias sosial, jantina, atau status dalam saringan bagi menyokong amalan inklusif. Penilaian diuji secara telus melalui persetujuan bersama (consensus).</p>
+
+                    <!-- Interactive Reliability Check -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 7: Pengiraan Kebolehpercayaan Inter-Rater</h4>
+                        <p class="text-xs text-dark-300">Nilai indeks Cohen's Kappa bagi dua penilai yang mengekod data BEI yang sama:</p>
+                        <div class="p-3 bg-dark-900 rounded-xl border border-dark-800 text-center text-brand-400 font-mono text-sm">
+                            Kappa (&kappa;) = 0.82 (Kekuatan Persetujuan Cemerlang)
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(7)) completedLessons.push(7); selectedLesson = 8" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 8 -->
+                <div x-show="selectedLesson === 8" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 8 - Analisis Data</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Pengumpulan dan Organisasi Data BESA</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">8.1 Sumber Data Utama BESA</h4>
+                    <p>Sistem pengumpulan data mengintegrasikan data kualitatif dan kuantitatif secara hibrid:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs text-dark-300">
+                        <li><strong>Primer:</strong> Transkrip BEI, rakaman wawancara, saringan tingkah laku.</li>
+                        <li><strong>Sekunder:</strong> Rekod prestasi tahunan, sijil latihan, portfolio kepimpinan.</li>
+                    </ul>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">8.2 Analisis Data Menggunakan SPSS & Ujian Chi-Square</h4>
+                    <p>Apabila menganalisis data kategorikal, <strong>Ujian Chi-Square</strong> digunakan untuk menentukan hubungan bebas:</p>
+                    <div class="bg-dark-950 p-4 rounded-xl border border-dark-800 text-xs">
+                        <p class="font-mono text-brand-400">// Ujian Chi-Square Kebebasan</p>
+                        <p class="mt-1">Digunakan untuk melihat sama ada dua pembolehubah kategorikal mempunyai korelasi yang signifikan (Cth: Kaedah Saringan vs Prestasi Kepimpinan).</p>
+                    </div>
+
+                    <!-- Interactive Chi-Square Contingency Calculator -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 8: Simulator Chi-Square 2x2 Dinamik</h4>
+                        <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <label class="block text-dark-400 font-bold mb-1">A) Latihan Berkesan / Prestasi Tinggi:</label>
+                                <input type="number" x-model.number="contingencyTable.r1c1" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label class="block text-dark-400 font-bold mb-1">B) Latihan Tradisional / Prestasi Tinggi:</label>
+                                <input type="number" x-model.number="contingencyTable.r1c2" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label class="block text-dark-400 font-bold mb-1">C) Latihan Berkesan / Prestasi Rendah:</label>
+                                <input type="number" x-model.number="contingencyTable.r2c1" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label class="block text-dark-400 font-bold mb-1">D) Latihan Tradisional / Prestasi Rendah:</label>
+                                <input type="number" x-model.number="contingencyTable.r2c2" class="w-full p-2 bg-dark-900 border border-dark-800 rounded-lg text-white">
+                            </div>
+                        </div>
+                        <button @click="
+                            let a = contingencyTable.r1c1; let b = contingencyTable.r1c2;
+                            let c = contingencyTable.r2c1; let d = contingencyTable.r2c2;
+                            let n = a+b+c+d;
+                            if(n > 0){
+                                chiSquareResult = (n * Math.pow((a*d - b*c), 2)) / ((a+b)*(c+d)*(a+c)*(b+d));
+                            }
+                        " class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Kira Chi-Square</button>
+
+                        <div x-show="chiSquareResult !== null" class="p-3 bg-brand-950/40 text-brand-300 text-xs rounded-xl border border-brand-900/50 font-mono">
+                            <p>Nilai Chi-Square (&chi;²) Hasil Pengiraan: <span class="font-bold text-white" x-text="chiSquareResult ? chiSquareResult.toFixed(3) : '0.000'"></span></p>
+                            <p class="mt-1 text-dark-400 text-[10px]" x-text="chiSquareResult !== null && chiSquareResult > 3.84 ? 'Persetujuan: Perbezaan sangat signifikan (p < 0.05). Kaedah saringan BESA terbukti berkesan.' : 'Persetujuan: Tiada perbezaan signifikan. Sila tambahkan sampel saringan anda.'"></p>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(8)) completedLessons.push(8); selectedLesson = 9" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 9 -->
+                <div x-show="selectedLesson === 9" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 9 - Pemantauan</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Pemantauan Hasil & Justifikasi Penilaian</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">9.1 Justifikasi Pemantauan Jangka Panjang</h4>
+                    <p>Pemantauan hasil memastikan bahawa modul saringan BESA mampan dan memberi ROI yang konsisten terhadap pelaburan modal insan universiti awam.</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">9.2 Pemahiran Semula (Reskilling) Penilai BESA</h4>
+                    <p>Penilai wajib menjalani reskilling dalam teknik temu duga BEI secara berkala bagi memastikan kesahan muka (face validity) dan mengurangkan bias penilai (rater bias).</p>
+
+                    <!-- Interactive Monitoring Checklist -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 9: Senarai Semak Kelayakan Pemantauan Hasil</h4>
+                        <div class="space-y-2 text-xs text-dark-300">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="accent-brand-500">
+                                <span>Audit data BEI dilakukan oleh pihak ketiga (Rakan Kritikal) setiap 6 bulan.</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="accent-brand-500">
+                                <span>Sistem pengkomputeran awan disahkan patuh standard privasi data universiti.</span>
+                            </label>
+                        </div>
+
+                        <div class="pt-4 border-t border-dark-800 flex justify-end">
+                            <button @click="if(!completedLessons.includes(9)) completedLessons.push(9); selectedLesson = 10" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow transition-all">Selesai & Seterusnya <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UNIT 10 -->
+                <div x-show="selectedLesson === 10" class="space-y-6" x-transition>
+                    <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 10 - Isu & Cabaran</span>
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Isu, Cabaran & Pengurusan Konflik Beretika</h2>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">10.1 Cabaran Utama Pengurusan Konflik Penilaian</h4>
+                    <p>Antara cabaran utama dalam penilaian prestasi ialah pertentangan kepentingan peribadi, ketidakpastian kriteria, dan reaksi emosi negatif daripada peserta saringan.</p>
+
+                    <h4 class="text-base font-bold text-white mt-4 border-b border-dark-800 pb-2">10.2 Revolusi dan Pembuatan Keputusan Berasaskan Data</h4>
+                    <p>Integrasi kecerdasan buatan (AI) membolehkan pemprosesan bahasa semula jadi (NLP) dijalankan ke atas transkrip BEI, sekali gus merevolusikan kaedah pengekodan manual tradisional yang memakan masa yang lama.</p>
+
+                    <!-- Interactive final check -->
+                    <div class="bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider">Aktiviti 10: Deklarasi Integriti Penilai BESA</h4>
+                        <p class="text-xs text-dark-300">Dengan menyelesaikan unit ini, saya berikrar untuk mengekalkan keadilan, objektiviti, kerahsiaan, dan ketelusan data saringan saksama berdasarkan etika tadbir urus SDG 16.</p>
+                        
+                        <button @click="if(!completedLessons.includes(10)) completedLessons.push(10)" class="w-full bg-brand-600 hover:bg-brand-500 text-white py-3 rounded-xl font-bold shadow text-xs transition">
+                            Tandakan Unit Ini Selesai & Berjaya Tamat SIM!
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: BESA DIAGNOSTIC TOOLKIT -->
+        <div x-show="currentTab === 'toolkit'" x-cloak class="space-y-8" x-transition>
+            <div class="bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 space-y-6">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Sistem Diagnostik Profil Kepemimpinan BESA</h2>
+                    <p class="text-xs text-dark-300">Nilai profil kepemimpinan anda merentas 5 Kluster Kompetensi Kepemimpinan AKEPT untuk menjana peta radar kompetensi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Sliders Input Panel -->
+                    <div class="lg:col-span-5 space-y-6 bg-dark-950 p-6 rounded-2xl border border-dark-800">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b border-dark-800 pb-2">Penilaian Kendiri (Skala 1 - 5)</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-dark-300 mb-1">
+                                    <span>Kluster 1: Keberkesanan Peribadi</span>
+                                    <span class="text-brand-400" x-text="scores.c1 + ' / 5'"></span>
+                                </div>
+                                <input type="range" min="1" max="5" step="1" x-model="scores.c1" class="w-full accent-brand-500">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-dark-300 mb-1">
+                                    <span>Kluster 2: Kognitif & Strategik</span>
+                                    <span class="text-brand-400" x-text="scores.c2 + ' / 5'"></span>
+                                </div>
+                                <input type="range" min="1" max="5" step="1" x-model="scores.c2" class="w-full accent-brand-500">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-dark-300 mb-1">
+                                    <span>Kluster 3: Memimpin Yang Lain</span>
+                                    <span class="text-brand-400" x-text="scores.c3 + ' / 5'"></span>
+                                </div>
+                                <input type="range" min="1" max="5" step="1" x-model="scores.c3" class="w-full accent-brand-500">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-dark-300 mb-1">
+                                    <span>Kluster 4: Impak & Pengaruh</span>
+                                    <span class="text-brand-400" x-text="scores.c4 + ' / 5'"></span>
+                                </div>
+                                <input type="range" min="1" max="5" step="1" x-model="scores.c4" class="w-full accent-brand-500">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-dark-300 mb-1">
+                                    <span>Kluster 5: Pencapaian & Tindakan</span>
+                                    <span class="text-brand-400" x-text="scores.c5 + ' / 5'"></span>
+                                </div>
+                                <input type="range" min="1" max="5" step="1" x-model="scores.c5" class="w-full accent-brand-500">
+                            </div>
+                        </div>
+
+                        <button @click="diagnosticDone = true" class="w-full bg-brand-600 hover:bg-brand-500 text-white py-3 rounded-xl font-bold shadow-md transition-all text-xs">
+                            Jana Visualisasi Profil Kepimpinan
+                        </button>
+                    </div>
+
+                    <!-- Visual Output Panel (Drawn dynamically using SVG) -->
+                    <div class="lg:col-span-7 bg-dark-950 p-6 rounded-2xl border border-dark-800 flex flex-col items-center justify-center min-h-[300px]">
+                        <h4 class="text-[10px] font-bold text-dark-400 uppercase tracking-widest mb-6">Peta Kompetensi Pentadbir BESA (Dynamic SVG Radar)</h4>
+                        
+                        <!-- Dynamic SVG Pentagon/Radar representation -->
+                        <div x-show="diagnosticDone" class="w-full max-w-[280px] aspect-square relative" x-transition>
+                            <svg viewBox="0 0 100 100" class="w-full h-full overflow-visible">
+                                <!-- Grid Lines (Pentagon background steps) -->
+                                <polygon points="50,5 95,38 78,90 22,90 5,38" fill="none" stroke="#334155" stroke-width="0.5"/>
+                                <polygon points="50,15 86,41 71,80 29,80 14,41" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+                                <polygon points="50,25 77,44 65,70 35,70 23,44" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+                                <polygon points="50,35 68,47 60,60 40,60 32,47" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+                                
+                                <!-- Center axes -->
+                                <line x1="50" y1="50" x2="50" y2="5" stroke="#475569" stroke-width="0.3" stroke-dasharray="1 1" />
+                                <line x1="50" y1="50" x2="95" y2="38" stroke="#475569" stroke-width="0.3" stroke-dasharray="1 1" />
+                                <line x1="50" y1="50" x2="78" y2="90" stroke="#475569" stroke-width="0.3" stroke-dasharray="1 1" />
+                                <line x1="50" y1="50" x2="22" y2="90" stroke="#475569" stroke-width="0.3" stroke-dasharray="1 1" />
+                                <line x1="50" y1="50" x2="5" y2="38" stroke="#475569" stroke-width="0.3" stroke-dasharray="1 1" />
+
+                                <!-- Value mapping vertices -->
+                                <polygon :points="
+                                    '50,' + (50 - (scores.c1 * 9)) + ' ' + 
+                                    (50 + (scores.c2 * 9 * 0.95)) + ',' + (50 - (scores.c2 * 9 * 0.31)) + ' ' +
+                                    (50 + (scores.c3 * 9 * 0.59)) + ',' + (50 + (scores.c3 * 9 * 0.81)) + ' ' +
+                                    (50 - (scores.c4 * 9 * 0.59)) + ',' + (50 + (scores.c4 * 9 * 0.81)) + ' ' +
+                                    (50 - (scores.c5 * 9 * 0.95)) + ',' + (50 - (scores.c5 * 9 * 0.31))
+                                " fill="rgba(16, 185, 129, 0.25)" stroke="#10b981" stroke-width="1.5" />
+                                
+                                <!-- Anchor Points dots -->
+                                <circle cx="50" :cy="50 - (scores.c1 * 9)" r="1.5" fill="#047857" />
+                                <circle :cx="50 + (scores.c2 * 9 * 0.95)" :cy="50 - (scores.c2 * 9 * 0.31)" r="1.5" fill="#047857" />
+                                <circle :cx="50 + (scores.c3 * 9 * 0.59)" :cy="50 + (scores.c3 * 9 * 0.81)" r="1.5" fill="#047857" />
+                                <circle :cx="50 - (scores.c4 * 9 * 0.59)" :cy="50 + (scores.c4 * 9 * 0.81)" r="1.5" fill="#047857" />
+                                <circle :cx="50 - (scores.c5 * 9 * 0.95)" :cy="50 - (scores.c5 * 9 * 0.31)" r="1.5" fill="#047857" />
+
+                                <!-- Legend Text labels -->
+                                <text x="50" y="2" font-size="3.5" font-weight="bold" text-anchor="middle" fill="#94a3b8">K1: Peribadi</text>
+                                <text x="96" y="36" font-size="3.5" font-weight="bold" text-anchor="start" fill="#94a3b8">K2: Kognitif</text>
+                                <text x="80" y="94" font-size="3.5" font-weight="bold" text-anchor="start" fill="#94a3b8">K3: Memimpin</text>
+                                <text x="20" y="94" font-size="3.5" font-weight="bold" text-anchor="end" fill="#94a3b8">K4: Impak</text>
+                                <text x="4" y="36" font-size="3.5" font-weight="bold" text-anchor="end" fill="#94a3b8">K5: Tindakan</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: BEI & STATISTICAL SANDBOX -->
+        <div x-show="currentTab === 'sandbox'" x-cloak class="space-y-8" x-transition>
+            <div class="bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 space-y-6">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-extrabold serif-title text-brand-400">Sandbox BEI & Simulator Statistik BESA</h2>
+                    <p class="text-xs text-dark-300">Alatan interaktif bagi menguji pengekodan tematik (Thematic Coding) saringan BEI dan keperluan analisis statistik pascasiswazah.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- BEI Transcription Pengekodan -->
+                    <div class="lg:col-span-6 bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider border-b border-dark-800 pb-2 mb-4">Ujian Pengekodan Transkrip BEI</h3>
+                            <div class="p-4 bg-dark-900 rounded-xl border border-dark-800 space-y-2 text-xs text-dark-200">
+                                <p class="font-bold text-brand-400">Transkrip Kes:</p>
+                                <p class="italic">"Apabila pelayan pendaftaran universiti kami tergendala secara tiba-tiba, saya tidak menunggu sebarang arahan formal bertulis. Saya segera mengambil inisiatif mengarahkan penubuhan kaunter manual kecemasan sementara bagi meredakan kebimbangan ibu bapa."</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 pt-4">
+                            <label class="block text-xs font-bold text-dark-300">Sila pilih Kluster Kompetensi yang paling tepat menggambarkan tindakan di atas:</label>
+                            <select class="w-full p-2.5 bg-dark-900 border border-dark-800 rounded-xl text-xs text-white">
+                                <option value="">-- Pilih Kluster --</option>
+                                <option value="k1">Kluster 1: Keberkesanan Peribadi (Integriti)</option>
+                                <option value="k2">Kluster 2: Kognitif & Strategik (Inovasi)</option>
+                                <option value="k5">Kluster 5: Pencapaian & Tindakan (Proaktif & Hasil)</option>
+                            </select>
+                            <button @click="alert('Pilihan Anda Telah Direkodkan! Tindakan proaktif tanpa menunggu arahan formal adalah sebahagian daripada bukti nyata Kluster 5 (Pencapaian & Tindakan).')" class="w-full bg-brand-600 hover:bg-brand-500 text-white py-2 rounded-lg text-xs font-bold transition">Sahkan Kod Pilihan</button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Checklist and calculator -->
+                    <div class="lg:col-span-6 bg-dark-950 p-6 rounded-2xl border border-dark-800 space-y-4">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider border-b border-dark-800 pb-2 mb-4">Semakan Keperluan Statistik Inferensi</h3>
+                        
+                        <div class="space-y-4 text-xs">
+                            <div class="p-3 bg-dark-900 rounded-xl border border-dark-800 space-y-2">
+                                <h4 class="font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-calculator text-brand-400"></i> Syarat Utama Ujian t-test</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-dark-400 text-[11px]">
+                                    <li>Data bertaburan normal (Normality test: Shapiro-Wilk &gt; 0.05).</li>
+                                    <li>Varians populasi sama (Levene's test p &gt; 0.05).</li>
+                                    <li>Sampel bebas (Independent samples) atau dipadankan (Paired).</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-3 bg-dark-900 rounded-xl border border-dark-800 space-y-2">
+                                <h4 class="font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-calculator text-indigo-400"></i> Syarat Utama One-Way ANOVA</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-dark-400 text-[11px]">
+                                    <li>Membandingkan purata min bagi 3 atau lebih kumpulan kategorikal.</li>
+                                    <li>Assumptions: Taburan normal, kesamaan varians, dan data selang/nisbah (Interval/Ratio).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: AI CAPSTONE HUB -->
+        <div x-show="currentTab === 'capstone'" x-cloak class="grid grid-cols-1 lg:grid-cols-12 gap-8" x-transition>
+            
+            <!-- Left Side Panel: 11 Capstone Sections -->
+            <div class="lg:col-span-4 bg-dark-900 p-6 rounded-3xl shadow-xl border border-dark-800 h-fit space-y-4">
+                <div class="space-y-1">
+                    <h3 class="text-sm font-bold text-brand-400 uppercase tracking-wider">11 Komponen Capstone</h3>
+                    <p class="text-[11px] text-dark-400">Pembina Sistem Penilaian BESA Digital (40% Weight)</p>
+                </div>
+                
+                <div class="space-y-1.5 overflow-y-auto max-h-[500px] pr-2">
+                    <template x-for="(sec, idx) in [
+                        { id: 'c1', no: 'B1', title: 'Program Profile' },
+                        { id: 'c2', no: 'B2', title: 'Behavioural Event Framework' },
+                        { id: 'c3', no: 'B3', title: 'Theory-Based Change Model' },
+                        { id: 'c4', no: 'B4', title: 'Innovation Adoption Analysis' },
+                        { id: 'c5', no: 'B5', title: 'Kirkpatrick Evaluation Plan' },
+                        { id: 'c6', no: 'B6', title: 'CIPP Evaluation Plan' },
+                        { id: 'c7', no: 'B7', title: 'Balanced Scorecard' },
+                        { id: 'c8', no: 'B8', title: 'BESA Instrument Set' },
+                        { id: 'c9', no: 'B9', title: 'AI-Assisted Data Analysis' },
+                        { id: 'c10', no: 'B10', title: 'Executive Evaluation Report' },
+                        { id: 'c11', no: 'B11', title: 'Strategic Recommendations' }
+                    ]">
+                        <button @click="selectedCapstoneSection = sec.id"
+                                :class="selectedCapstoneSection === sec.id ? 'bg-brand-950 text-brand-300 border-brand-500/40' : 'bg-transparent text-dark-300 border-transparent hover:bg-dark-800'"
+                                class="w-full text-left px-4 py-3 rounded-2xl border-l-4 transition flex items-center space-x-3">
+                            <span class="bg-dark-950 text-dark-400 text-[10px] font-bold px-2 py-0.5 rounded border border-dark-800" x-text="sec.no"></span>
+                            <span class="text-xs font-bold" x-text="sec.title"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Right Panel: Dynamic AI Assistant Prompt Builder -->
+            <div class="lg:col-span-8 bg-dark-900 p-8 rounded-3xl shadow-xl border border-dark-800 space-y-6">
+                <span class="bg-brand-950 text-brand-300 border border-brand-800/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">AI Prompt Engineering Hub</span>
+                
+                <h3 class="text-2xl font-extrabold serif-title text-brand-400">Penjana Prompt AI (BESA Evaluator Tool)</h3>
+                <p class="text-xs sm:text-sm text-dark-300 leading-relaxed">Sila edit draf di bawah mengikut keperluan organisasi anda. Prompt yang dijana sedia disalin secara langsung untuk dihantar ke Google Gemini bagi menghasilkan output pascasiswazah berkualiti tinggi.</p>
+                
+                <!-- Displaying Prompt based on selected section -->
+                <div class="space-y-4">
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-dark-300">Edit Draf Kandungan Anda:</label>
+                        <textarea x-model="capstoneDrafts[selectedCapstoneSection]" class="w-full p-3 bg-dark-950 border border-dark-800 rounded-xl text-xs font-mono text-white" rows="3"></textarea>
+                    </div>
+
+                    <div class="bg-dark-950 text-dark-100 p-6 rounded-2xl space-y-3 font-mono text-xs border border-dark-800 relative">
+                        <button @click="document.execCommand('copy')" class="absolute top-4 right-4 bg-dark-900 hover:bg-dark-800 text-brand-400 px-3 py-1.5 rounded-xl transition text-[11px] font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-copy"></i> Salin Prompt
+                        </button>
+                        <h4 class="text-brand-400 font-bold uppercase tracking-wider">// Prompt AI Dinamik untuk Gemini</h4>
+                        <p class="leading-relaxed text-dark-300 pt-2">
+                            "Anda adalah penilai pakar dan ahli akademik Pascasiswazah (MQA Tahap 7) bagi program pembangunan kepemimpinan bakat universiti. Sila bantu saya merangka struktur bahagian <span class="text-white font-bold" x-text="selectedCapstoneSection.toUpperCase()"></span> berpandukan draf kandungan berikut: <span class="text-brand-300 italic">x-data</span> '<span class="text-white" x-text="capstoneDrafts[selectedCapstoneSection]"></span>'. Tulis analisis kritikal, mampan, menyokong standard SDG 16.6, dan dalam Bahasa Melayu profesional."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="bg-dark-950 text-dark-400 text-xs py-10 border-t border-dark-900 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-graduation-cap text-2xl text-brand-500"></i>
+                <span class="font-extrabold text-white tracking-widest uppercase">PGC4006 - BESA SAMC</span>
+            </div>
+            <div class="flex space-x-6 text-[11px]">
+                <a href="#" class="hover:text-brand-400 transition">UTMCDex Standard</a>
+                <a href="#" class="hover:text-brand-400 transition">PutraODL SIM Handbook</a>
+                <a href="#" class="hover:text-brand-400 transition">AKEPT Quality Submission</a>
+            </div>
+            <div>
+                <p>© 2026 Universiti Putra Malaysia & AKEPT. Hak Cipta Terpelihara.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
